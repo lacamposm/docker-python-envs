@@ -1,0 +1,22 @@
+# Imagen base misma que en latest de PythonConda
+FROM continuumio/miniconda3:23.10.0-1
+
+# Actualizar repositorios e instalar utilidades esenciales para desarrollo
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    build-essential \
+    ca-certificates \
+    curl \
+    git \
+    libnss3 \
+    make \
+    sudo \
+    wget \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update && apt-get install -y --no-install-recommends nodejs \
+    && node -v && npm -v \
+    && git config --system core.sshCommand "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
+    && git config --system --add safe.directory "*" \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+CMD ["/bin/bash"]
