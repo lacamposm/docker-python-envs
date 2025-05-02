@@ -58,7 +58,7 @@ El archivo docker-compose.yml configura:
 
 ---
 
-# 🐳 Docker Multitask Python Environments - Guía Completa 🐳
+# 🐳 Docker Python Environments - Guía Completa 🐳
 
 ## Tabla de Contenidos
 - [Introducción](#introducción)
@@ -213,6 +213,11 @@ Estando en la carpeta padre del proyecto:
 3. Ejecutar el contenedor montando la carpeta actual como volumen:
      ```sh
      docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python3.12-slim:latest
+     ```
+     
+4. Para iniciar un servidor Jupyter Notebook y explorar el entorno:
+     ```sh
+     docker run -it --rm -p 8888:8888 -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python3.12-slim:latest jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
      ```
 
 ##### Windows
@@ -607,6 +612,10 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
      ```sh
      docker tag python-spark tu-usuario-dockerhub/nombre-asignado:python-spark
      ```
+     Para PythonSparkDev:
+     ```sh
+     docker tag python-spark-dev tu-usuario-dockerhub/nombre-asignado:python-spark-dev
+     ```
 
 3. Subir las imágenes a Docker Hub
    Una vez etiquetadas, puedes subirlas a Docker Hub:
@@ -630,6 +639,10 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
      Para PythonSpark:
      ```sh
      docker push tu-usuario-dockerhub/nombre-asignado:python-spark
+     ```
+     Para PythonSparkDev:
+     ```sh
+     docker push tu-usuario-dockerhub/nombre-asignado:python-spark-dev
      ```
 
 4. Descargar y utilizar imágenes desde Docker Hub
@@ -665,7 +678,7 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
 - Mantener las imágenes lo más ligeras posible para disminuir tiempos de descarga y consumo de recursos.  
 - Usar herramientas de orquestación como Docker Compose o Kubernetes para coordinar varios contenedores (ej. bases de datos, servidores web, etc.).  
 
-## Conclusión
+## Comentario
 
 Docker ha transformado radicalmente la forma en que desarrollamos, probamos y desplegamos aplicaciones, tanto en Python como en otros lenguajes. Al encapsular cada entorno en contenedores, se garantiza una ejecución uniforme y predecible en cualquier plataforma, eliminando de raíz el clásico problema de "en mi máquina funciona". 
 
