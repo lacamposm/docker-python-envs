@@ -1,11 +1,14 @@
-name: my-project-env
+name: pyspark-dev-env
 channels:
   - conda-forge
   - defaults
 dependencies:
   - python=3.12
   - pip
-  - pandas
+  - streamlit
+  - pyspark=3.5.5   # Spark
   - pip:
-    - debugpy   # Debugging
-    - jupyter   # Notebooks
+    - debugpy       # Debugging
+    - jupyter       # Notebooks
+    - sphinx        # Documentation
+    - black         # Code formatting

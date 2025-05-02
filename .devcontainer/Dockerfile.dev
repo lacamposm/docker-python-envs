@@ -1,30 +1,30 @@
-# Use the same base image as the main Dockerfile
+# Use the base image developed by lacamposm for PySpark and Conda
 # For more information:
 #  - https://hub.docker.com/r/lacamposm/docker-helpers
 #  - https://github.com/lacamposm/desarrollo-analitico-oic 
-FROM lacamposm/docker-helpers:python-conda-base-0.1.1-dev
+FROM lacamposm/docker-helpers:pyspark-conda-0.1.1-dev
 
 # Set the working directory inside the container
-WORKDIR /my-project-dir
+WORKDIR /pyspark-project
 
-COPY environment.dev.yml /tmp/environment.yml
+COPY .devcontainer/environment.dev.yml /tmp/environment.yml
 
 # Define user and group IDs as build arguments
 ARG USER_UID=1000
 ARG USER_GID=1000
 
 # Combine all RUN commands to reduce image layers
-RUN conda env create -f /tmp/environment.yml -n my-project-conda-env \
+RUN conda env create -f /tmp/environment.yml -n pyspark-project-dev \
     && conda clean --all --yes \
     && rm /tmp/environment.yml \
-    && printf "source /opt/conda/etc/profile.d/conda.sh\nconda activate my-project-conda-env\n" \
+    && printf "source /opt/conda/etc/profile.d/conda.sh\nconda activate pyspark-project-dev\n" \
        > /etc/profile.d/conda-env.sh \
     && groupadd --gid $USER_GID dev-user \
     && useradd --uid $USER_UID --gid $USER_GID -m dev-user \
-    && chown -R dev-user:dev-user /my-project-dir \
+    && chown -R dev-user:dev-user /pyspark-project \
     && { \
          echo "source /opt/conda/etc/profile.d/conda.sh"; \
-         echo "conda activate my-project-conda-env"; \
+         echo "conda activate pyspark-project-dev"; \
        } >> /home/dev-user/.bashrc \
     && chown dev-user:dev-user /home/dev-user/.bashrc
 
@@ -32,7 +32,7 @@ RUN conda env create -f /tmp/environment.yml -n my-project-conda-env \
 USER dev-user
 
 # Copy the application code and set ownership to the non-root user
-COPY --chown=dev-user:dev-user . /my-project-dir
+COPY --chown=dev-user:dev-user . /pyspark-project
 
 # Expose the port used
 EXPOSE 4040 8000 8501 8888

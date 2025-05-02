@@ -1,0 +1,17 @@
+services:
+  my-project-sol:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-project-sol
+    container_name: my-project-sol
+    working_dir: /my-project-dir
+    ports:
+      - "8501:8501" # Streamlit
+      - "4040:4040" # SparkUI
+    volumes:
+      - ./:/my-project-dir
+    environment:
+      - PYTHONPATH=/my-project-dir      
+    
+    command: bash -lc "streamlit run app.py"

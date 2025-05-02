@@ -32,3 +32,5 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Expose ports for Spark UI, FastAPI, Streamlit, Jupyter
 EXPOSE 4040 8000 8501 8888
+
+CMD ["/bin/bash"]
