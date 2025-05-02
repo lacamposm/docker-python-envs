@@ -1,0 +1,55 @@
+{
+  "name": "custom name",
+  "dockerComposeFile": "docker-compose-dev.yml",
+  "service": "dev-name-project",
+  "workspaceFolder": "/my-project-dir",
+  "remoteUser": "dev-user",
+  "shutdownAction": "stopCompose",
+  "postCreateCommand": "conda run -n my-project-conda-env python -m ipykernel install --user --name my-project-conda-env --display-name 'Python 3.12 (my-project-conda-env)'",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.profiles.linux": {
+          "bash-login": {
+            "path": "/bin/bash",
+            "args": [
+              "-l",
+              "-i"
+            ]
+          }
+        },
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.condaPath": "/opt/conda/bin/conda",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "python.formatting.blackPath": "/opt/conda/envs/my-project-dir/bin/black",
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.python"
+        },
+        "jupyter.kernelspecSearchPaths": [
+          "~/.local/share/jupyter/kernels",
+          "/opt/conda/envs/my-project-dir/share/jupyter/kernels"
+        ]
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "mhutchie.git-graph",
+        "GitHub.copilot"
+      ]
+    }
+  },
+  "forwardPorts": [
+    4040,
+    5678,
+    8000,
+    8501,
+    8888
+  ]
+}

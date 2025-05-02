@@ -1,0 +1,22 @@
+services:
+  dev-name-project:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: dev-name-project
+    container_name: dev-name-project
+    working_dir: /my-project-dir
+    ports:
+      - "8501:8501" # Streamlit
+      - "5678:5678" # Debugging
+      - "8888:8888" # Jupyter-Notebook
+      - "4040:4040" # SparkUI,
+    volumes:
+      - ../:/my-project-dir
+    environment:
+      # For debugging
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/my-project-dir
+      - DEBUG=true
+    
+    command: tail -f /dev/null 
