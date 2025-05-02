@@ -22,7 +22,7 @@ Estando en la carpeta padre del proyecto:
 1. Construir la imagen de Docker:
 
      ```bash
-     docker build -t python3.12-slim -f ./python-min/Dockerfile.PythonMin .
+     docker build -t python3.12-slim -f ./python-min/Dockerfile .
      ```
 
 3. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -34,7 +34,7 @@ Estando en la carpeta padre del proyecto:
 
 1. Construir la imagen de Docker:
      ```sh
-     docker build -t python3.12-slim -f .\python-min\Dockerfile.PythonMin .
+     docker build -t python3.12-slim -f .\python-min\Dockerfile .
      ```
 3. Ejecutar el contenedor montando la carpeta actual como volumen:
 
@@ -80,7 +80,7 @@ Estando en la carpeta padre del proyecto:
 
 1. Construir la imagen de Docker:
      ```sh
-     docker build -t python-conda -f ./conda/Dockerfile.PythonConda .
+     docker build -t python-conda -f ./conda/Dockerfile .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -92,7 +92,7 @@ Estando en la carpeta padre del proyecto:
 
 1. Construir la imagen de Docker:
      ```powershell
-     docker build -t python-conda -f .\conda\Dockerfile.PythonConda .
+     docker build -t python-conda -f .\conda\Dockerfile .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -138,7 +138,7 @@ CMD ["/bin/bash"]
 
 1. Construir la imagen de Docker:
      ```sh
-     docker build -t python-conda-dev -f ./conda/Dockerfile.PythonCondaDev .
+     docker build -t python-conda-dev -f ./conda/Dockerfile.dev .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -150,7 +150,7 @@ CMD ["/bin/bash"]
 
 1. Construir la imagen de Docker:
      ```powershell
-     docker build -t python-conda-dev -f .\conda\Dockerfile.PythonCondaDev .
+     docker build -t python-conda-dev -f .\conda\Dockerfile.dev .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -204,7 +204,7 @@ Estando en la carpeta padre del proyecto:
 
 1. Construir la imagen de Docker:
      ```sh
-     docker build -t python-poetry -f ./poetry/Dockerfile.PythonPoetry .
+     docker build -t python-poetry -f ./poetry/Dockerfile .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -216,7 +216,7 @@ Estando en la carpeta padre del proyecto:
 
 1. Construir la imagen de Docker:
      ```powershell
-     docker build -t python-poetry -f .\poetry\Dockerfile.PythonPoetry .
+     docker build -t python-poetry -f .\poetry\Dockerfile .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -265,7 +265,7 @@ CMD ["/bin/bash"]
 
 1. Construir la imagen de Docker:
      ```sh
-     docker build -t python-poetry-dev -f ./poetry/Dockerfile.PoetryDev .
+     docker build -t python-poetry-dev -f ./poetry/Dockerfile.dev .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -277,7 +277,7 @@ CMD ["/bin/bash"]
 
 1. Construir la imagen de Docker:
      ```powershell
-     docker build -t python-poetry-dev -f .\poetry\Dockerfile.PoetryDev .
+     docker build -t python-poetry-dev -f .\poetry\Dockerfile.dev .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:

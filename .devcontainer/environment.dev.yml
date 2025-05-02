@@ -6,6 +6,6 @@ dependencies:
   - python=3.12
   - pip
   - pandas
-  - pyspark      # Spark
   - pip:
-    - jupyter    # Notebooks
+    - debugpy   # Debugging
+    - jupyter   # Notebooks

@@ -1,8 +1,8 @@
 services:
   dev-name-project:
     build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
+      context: .
+      dockerfile: Dockerfile.dev
     image: dev-name-project
     container_name: dev-name-project
     working_dir: /my-project-dir

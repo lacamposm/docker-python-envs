@@ -74,6 +74,29 @@ Los comandos esenciales para trabajar con Docker son:
 - **Pruebas y validación**: Se pueden ejecutar tests en contenedores limpios, reproduciendo condiciones idénticas sin afectar la configuración del sistema local.  
 - **Despliegue en producción**: Una vez validada la aplicación, se despliega el mismo contenedor en el entorno de producción, lo que reduce los errores por diferencias de configuración.  
 
+## Desarrollo con VS Code DevContainer
+
+Para facilitar el desarrollo aislado con VS Code, se provee un DevContainer configurado en la carpeta `.devcontainer`:
+
+1. **Construir y levantar** el contenedor con Docker Compose:
+
+    ```sh
+    docker compose -f .devcontainer/docker-compose-dev.yml up --build
+    ```
+
+2. **Contexto y Dockerfile** usados:
+    - Contexto: `.` (directorio raíz del proyecto)
+    - Dockerfile: `.devcontainer/Dockerfile.dev`
+    - Archivo de entorno: `.devcontainer/environment.dev.yml`
+
+3. **Acceder** al contenedor:
+    ```sh
+    docker exec -it dev-name-project bash
+    ```
+
+4. **Reabrir en contenedor** desde VS Code (guía rápida):
+    - Ctrl+Shift+P → _Dev Containers: Rebuild and Reopen in Container_
+
 ## Recomendaciones al Trabajar con Docker y Python
 
 - Incluir siempre un archivo con las dependencias (por ejemplo, `requirements.txt`, `pyproject.toml` o `environment.yml` para Conda) para que la instalación sea clara y reproducible.

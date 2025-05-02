@@ -5,7 +5,7 @@
   "workspaceFolder": "/my-project-dir",
   "remoteUser": "dev-user",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "conda run -n my-project-env python -m ipykernel install --user --name my-project-env --display-name 'Python 3.12 (my-project-env)'",
+  "postCreateCommand": "conda run -n my-project-conda-env python -m ipykernel install --user --name my-project-conda-env --display-name 'Python 3.12 (my-project-conda-env)'",
   "customizations": {
     "vscode": {
       "settings": {
