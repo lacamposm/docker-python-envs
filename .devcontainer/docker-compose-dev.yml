@@ -1,10 +1,10 @@
 services:
-  dev-name-project:
+  pyspark-project:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
-    image: dev-name-project
-    container_name: dev-name-project
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.dev
+    image: pyspark-project
+    container_name: pyspark-project
     working_dir: /my-project-dir
     ports:
       - "8501:8501" # Streamlit

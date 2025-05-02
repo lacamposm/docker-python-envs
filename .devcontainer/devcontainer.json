@@ -1,11 +1,11 @@
 {
   "name": "custom name",
   "dockerComposeFile": "docker-compose-dev.yml",
-  "service": "dev-name-project",
-  "workspaceFolder": "/my-project-dir",
+  "service": "pyspark-project",
+  "workspaceFolder": "/pyspark-project",
   "remoteUser": "dev-user",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "conda run -n my-project-conda-env python -m ipykernel install --user --name my-project-conda-env --display-name 'Python 3.12 (my-project-conda-env)'",
+  "postCreateCommand": "conda run -n pyspark-project-dev python -m ipykernel install --user --name pyspark-project-dev --display-name 'Python 3.12 (pyspark-project-dev)'",
   "customizations": {
     "vscode": {
       "settings": {
@@ -23,14 +23,14 @@
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": true,
         "python.formatting.provider": "black",
-        "python.formatting.blackPath": "/opt/conda/envs/my-project-dir/bin/black",
+        "python.formatting.blackPath": "/opt/conda/envs/pyspark-project/bin/black",
         "editor.formatOnSave": true,
         "[python]": {
           "editor.defaultFormatter": "ms-python.python"
         },
         "jupyter.kernelspecSearchPaths": [
           "~/.local/share/jupyter/kernels",
-          "/opt/conda/envs/my-project-dir/share/jupyter/kernels"
+          "/opt/conda/envs/pyspark-project/share/jupyter/kernels"
         ]
       },
       "extensions": [

@@ -15,13 +15,13 @@
   - [Python Conda Dev](#dockerfile-pythoncondasev)
   - [Python Poetry](#dockerfile-pythonpoetry)
   - [Python Poetry Dev](#dockerfile-poetrydev)
+  - [Python Spark](#dockerfile-pythonspark)
 - [Usos de Docker en Python](#usos-de-docker-en-python)
 - [Desarrollo con VS Code DevContainer](#desarrollo-con-vs-code-devcontainer)
 - [Publicación de imágenes en Docker Hub](#publicar-la-imagen-en-docker-hub)
 - [Recomendaciones](#recomendaciones-al-trabajar-con-docker-y-python)
 - [Conclusión](#conclusión)
 
-## Introducción
 
 ### ¿Qué es Docker?
 
@@ -93,7 +93,7 @@ Los comandos esenciales para trabajar con Docker son:
 
 ## Imágenes disponibles y uso
 
-### Dockerfile.PythonMin
+### python-min/Dockerfile
 
 Imagen mínima de Python 3.12 para entornos ligeros sin paquetes adicionales.
 Esta imagen se utiliza cuando se requiere un entorno base de Python sin dependencias extras, ideal para ejecutar scripts o aplicaciones simples de manera eficiente sin sobrecargar el contenedor.
@@ -142,7 +142,7 @@ Estando en la carpeta padre del proyecto:
           python3.12-slim:latest
      ```
 
-### Dockerfile.PythonConda
+### conda/Dockerfile
 
 Imagen basada en Miniconda para entornos de desarrollo científico.
 
@@ -195,7 +195,7 @@ Estando en la carpeta padre del proyecto:
      python-conda:latest
      ```
 
-### Dockerfile.PythonCondaDev
+### conda/Dockerfile.dev
 
 Versión extendida para desarrollo con Node.js y otras herramientas adicionales.
 
@@ -253,38 +253,29 @@ CMD ["/bin/bash"]
      python-conda-dev:latest
      ```
 
-### Dockerfile.PythonPoetry
+### poetry/Dockerfile
 
 Imagen básica con Python 3.12-slim y Poetry para gestión de dependencias.
 
 ```dockerfile
-# Imagen base de Python 3.12
-FROM python:3.12-slim
+FROM python:3.12.10
 
-# Instalar utilidades necesarias
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash \
-    curl \
-    git \
-    wget \
-    make \
-    ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
+      version="0.1.1" \
+      description="Python 3.12.10 + Poetry"
 
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir poetry
+ENV POETRY_HOME="/opt/poetry"
+ENV PATH="${POETRY_HOME}/bin:${PATH}"
 
-RUN poetry config virtualenvs.create false
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    bash build-essential ca-certificates curl git make wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir --upgrade pip --root-user-action=ignore \
+    && curl -sSL https://install.python-poetry.org | python3 - \
+    && poetry config virtualenvs.create false \
+    && rm -rf /root/.cache/pypoetry/*
 
-# Configuración de git
-RUN git config --system core.sshCommand "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
-    && git config --system --add safe.directory "*"
-
-# Directorio de trabajo
-WORKDIR /developer
-
-# CMD por defecto
 CMD ["/bin/bash"]
 ```
 
@@ -319,57 +310,66 @@ Estando en la carpeta padre del proyecto:
      python-poetry:latest
      ```
 
-### Dockerfile.PoetryDev
+### spark/Dockerfile
 
-Versión de desarrollo con herramientas adicionales y Node.js.
+Imagen con Python Conda y Apache Spark para procesamiento de datos distribuido.
 
 ```dockerfile
-# Imagen base de Python 3.12
-FROM python:3.12
+FROM lacamposm/docker-helpers:python-conda-base-0.1.1
 
-# Instalar utilidades necesarias, Node.js, y todas las dependencias en un solo paso
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash \
-    build-essential \
-    curl \
-    git \
-    wget \
-    sudo \
-    ca-certificates \
-    make \
-    libnss3 \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y --no-install-recommends nodejs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && node -v && npm -v \
-    && pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir poetry \
-    && git config --system core.sshCommand "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
-    && git config --system --add safe.directory "*"
+LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
+      version="0.1.1" \
+      description="Python 3.12.10 + Spark 3.5.5"
+
+# Install dependencies, configure system, and setup directories in a single layer
+# to reduce image size and number of layers  
+RUN mkdir -p /my-project-dir /data/_tmp && \
+    chmod -R 777 /data/_tmp && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        bash-completion \
+        locales \
+        openjdk-17-jre-headless && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget -q https://archive.apache.org/dist/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz && \
+    tar -xzf spark-3.5.5-bin-hadoop3.tgz && \
+    mv spark-3.5.5-bin-hadoop3 /opt/spark && \
+    rm spark-3.5.5-bin-hadoop3.tgz && \
+    rm -rf /tmp/* /root/.cache /root/.wget-hsts
+
+# Configure environment variables.
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Expose ports for Spark UI, FastAPI, Streamlit, Jupyter
+EXPOSE 4040 8000 8501 8888
 
 CMD ["/bin/bash"]
 ```
 
 #### Ejecutar y Crear el Contenedor
 
+Estando en la carpeta padre del proyecto:
+
 ##### Linux/MacOS
 
 1. Construir la imagen de Docker:
      ```sh
-     docker build -t python-poetry-dev -f ./poetry/Dockerfile.dev .
+     docker build -t python-spark -f ./spark/Dockerfile .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
      ```sh
-     docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python-poetry-dev
+     docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python-spark:latest
      ```
 
 ##### Windows
 
 1. Construir la imagen de Docker:
      ```powershell
-     docker build -t python-poetry-dev -f .\poetry\Dockerfile.dev .
+     docker build -t python-spark -f .\spark\Dockerfile .
      ```
 
 2. Ejecutar el contenedor montando la carpeta actual como volumen:
@@ -377,7 +377,7 @@ CMD ["/bin/bash"]
      docker run -it --rm `
      -v "${PWD}:/$(Split-Path -Leaf $PWD)" `
      -w "/$(Split-Path -Leaf $PWD)" `
-     python-poetry-dev
+     python-spark:latest
      ```
 
 ## Usos de Docker en Python
@@ -390,24 +390,26 @@ CMD ["/bin/bash"]
 
 Para facilitar el desarrollo aislado con VS Code, se provee un DevContainer configurado en la carpeta `.devcontainer`:
 
-1. **Construir y levantar** el contenedor con Docker Compose:
+1.  **Construir y levantar** el contenedor con Docker Compose:
 
     ```sh
     docker compose -f .devcontainer/docker-compose-dev.yml up --build
     ```
 
-2. **Contexto y Dockerfile** usados:
-    - Contexto: `.` (directorio raíz del proyecto)
-    - Dockerfile: `.devcontainer/Dockerfile.dev`
-    - Archivo de entorno: `.devcontainer/environment.dev.yml`
+2.  **Contexto y Dockerfile** usados:
+    *   Contexto: `.` (directorio raíz del proyecto)
+    *   Dockerfile: `.devcontainer/Dockerfile.dev`
+    *   Archivo de entorno: `.devcontainer/environment.dev.yml`
 
-3. **Acceder** al contenedor:
+3.  **Acceder** al contenedor:
     ```sh
     docker exec -it dev-name-project bash
     ```
 
-4. **Reabrir en contenedor** desde VS Code (guía rápida):
-    - Ctrl+Shift+P → _Dev Containers: Rebuild and Reopen in Container_
+4.  **Reabrir en contenedor** desde VS Code (guía rápida):
+    *   Ctrl+Shift+P → _Dev Containers: Rebuild and Reopen in Container_
+
+**➡️ Para más detalles sobre la configuración del Dev Container, consulta el [README específico de .devcontainer](./.devcontainer/README.md).**
 
 ## Publicar la Imagen en Docker Hub
 
@@ -442,6 +444,10 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
      ```sh
      docker tag python-poetry-dev tu-usuario-dockerhub/nombre-asignado:python-poetry-dev
      ```
+     Para PythonSpark:
+     ```sh
+     docker tag python-spark tu-usuario-dockerhub/nombre-asignado:python-spark
+     ```
 
 3. Subir las imágenes a Docker Hub
    Una vez etiquetadas, puedes subirlas a Docker Hub:
@@ -465,6 +471,10 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
      Para PoetryDev:
      ```sh
      docker push tu-usuario-dockerhub/nombre-asignado:python-poetry-dev
+     ```
+     Para PythonSpark:
+     ```sh
+     docker push tu-usuario-dockerhub/nombre-asignado:python-spark
      ```
 
 4. Descargar y utilizar imágenes desde Docker Hub
