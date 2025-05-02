@@ -4,6 +4,28 @@
 
 Este repositorio incluye una aplicación de ejemplo que demuestra el uso práctico de Docker con Python, PySpark y Streamlit. La aplicación está configurada para ejecutarse fácilmente usando Docker Compose y basada en una imagen con `spark` ya configurada.
 
+### Cómo clonar este repositorio
+
+Para comenzar a trabajar con este proyecto, primero debes clonar el repositorio:
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/lacamposm/docker-python-envs.git
+
+# Ingresar al directorio del proyecto
+cd docker-python-envs
+```
+
+Si deseas trabajar con una rama específica:
+
+```bash
+# Listar todas las ramas disponibles
+git branch -a
+
+# Cambiar a la rama ejemplo (con la aplicación Streamlit)
+git checkout feature/example-use
+```
+
 ### Estructura del proyecto de ejemplo
 
 ```
