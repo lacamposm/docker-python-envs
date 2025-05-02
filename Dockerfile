@@ -1,0 +1,36 @@
+# Use image base for development with conda and pyspark
+# For more information:
+#   - https://hub.docker.com/r/lacamposm/docker-helpers
+#   - https://github.com/lacamposm/desarrollo-analitico-oic
+FROM lacamposm/docker-helpers:pyspark-conda-0.1.1-dev
+
+WORKDIR /my-project
+
+# Copy environment.yml and setup Conda environment
+COPY environment.yml /tmp/environment.yml
+# Create a development user with configurable UID/GID to match host system
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN groupadd --gid $USER_GID dev-user \
+    && useradd --uid $USER_UID --gid $USER_GID -m dev-user \
+    && chown -R dev-user:dev-user /my-project /data/_tmp \
+    && conda env create -f /tmp/environment.yml -n pyspark-env \
+    && rm /tmp/environment.yml \
+    && conda clean --all --yes \
+    && printf "source /opt/conda/etc/profile.d/conda.sh\nconda activate pyspark-env\n" > /etc/profile.d/conda-env.sh \
+    && echo "source /opt/conda/etc/profile.d/conda.sh" >> /home/dev-user/.bashrc \
+    && echo "conda activate pyspark-env" >> /home/dev-user/.bashrc \
+    && chown dev-user:dev-user /home/dev-user/.bashrc
+
+# Switch to the development user for all subsequent operations
+USER dev-user
+
+# Example:
+# Expose ports for:
+# - 4040: Spark UI
+# - 8000: FastAPI
+# - 8501: Streamlit
+# - 8888: Jupyter Notebook
+EXPOSE 4040 8000 8501 8888
+
+CMD ["/bin/bash"]

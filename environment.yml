@@ -5,7 +5,9 @@ channels:
 dependencies:
   - python=3.12
   - pip
-  - pandas
-  - pyspark      # Spark
+  - pyspark=3.5.5   # Spark
   - pip:
-    - jupyter    # Notebooks
+    - debugpy       # Debugging
+    - jupyter       # Notebooks
+    - sphinx        # Documentation
+    - black
