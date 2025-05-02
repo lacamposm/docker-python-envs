@@ -443,7 +443,7 @@ Estando en la carpeta padre del proyecto:
 Imagen con Python Conda y Apache Spark para procesamiento de datos distribuido.
 
 ```dockerfile
-# Use the same base image as the main Dockerfile
+# Use the base image in conda/Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 #   - https://github.com/lacamposm/desarrollo-analitico-oic
@@ -486,7 +486,7 @@ CMD ["/bin/bash"]
 Versión extendida para desarrollo con herramientas adicionales y base en python-conda-dev.
 
 ```dockerfile
-# Use the same base image as the main Dockerfile
+# Use the base image in conda/Dockerfile.dev
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 #   - https://github.com/lacamposm/desarrollo-analitico-oic

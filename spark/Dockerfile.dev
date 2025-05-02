@@ -1,4 +1,4 @@
-# Use the same base image as the main Dockerfile
+# Use the base image in conda/Dockerfile.dev
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 #   - https://github.com/lacamposm/desarrollo-analitico-oic
