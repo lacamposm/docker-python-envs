@@ -1,4 +1,4 @@
-# 🐳 Configuración del Contenedor de Desarrollo
+# 🐳 Configuración del Contenedor de Desarrollo 🐳
 
 Este directorio contiene los archivos de configuración para establecer un entorno de contenedor de desarrollo utilizando la característica Dev Containers de Visual Studio Code. Esto permite un entorno de desarrollo consistente y aislado basado en Docker.
 

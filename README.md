@@ -1,3 +1,63 @@
+# 🐳 Docker-Python-Environments 🐳
+
+## Ejemplo de aplicación en PySpark con Streamlit
+
+Este repositorio incluye una aplicación de ejemplo que demuestra el uso práctico de Docker con Python, PySpark y Streamlit. La aplicación está configurada para ejecutarse fácilmente usando Docker Compose y basada en una imagen con `spark` ya configurada.
+
+### Estructura del proyecto de ejemplo
+
+```
+app.py                # Aplicación Streamlit con PySpark
+docker-compose.yml    # Configuración para desplegar la aplicación
+Dockerfile            # Imagen Docker para la aplicación
+environment.yml       # Dependencias de Conda para el proyecto
+```
+
+### Características de la aplicación
+
+- **Verificación del entorno PySpark**: Comprueba que PySpark funciona correctamente
+- **Consultas SQL interactivas**: Permite ejecutar consultas Spark SQL desde la interfaz web
+- **Visualización de datos**: Muestra resultados en tablas interactivas
+
+### Vista previa de la aplicación
+
+![Ejemplo de la aplicación PySpark con Streamlit](images/app_image.png)
+
+### Cómo ejecutar la aplicación
+
+1. **Usando Docker Compose** (recomendado):
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   La aplicación estará disponible en: http://localhost:8501
+
+2. **Construyendo manualmente**:
+
+   ```bash
+   # Construir la imagen
+   docker build -t my-project-sol .
+   
+   # Ejecutar el contenedor
+   docker run -it --rm -p 8501:8501 -p 4040:4040 -v "$(pwd)":/my-project-dir -w /my-project-dir my-project-sol bash -lc "streamlit run app.py"
+   ```
+
+### Detalles del Dockerfile
+
+El Dockerfile principal utiliza la imagen base `lacamposm/docker-helpers:pyspark-conda-0.1.1` que incluye Python, Conda y PySpark preconfigurados. La aplicación se ejecuta en un entorno Conda definido en `environment.yml`.
+
+### Estructura de docker-compose.yml
+
+El archivo docker-compose.yml configura:
+- Construcción automática de la imagen
+- Mapeo de puertos (8501 para Streamlit, 4040 para la UI de Spark)
+- Montaje de volúmenes para el código fuente
+- Variables de entorno necesarias
+- Comando para iniciar la aplicación Streamlit
+
+---
+
 # 🐳 Docker Multitask Python Environments - Guía Completa 🐳
 
 ## Tabla de Contenidos
@@ -101,7 +161,40 @@ Esta imagen se utiliza cuando se requiere un entorno base de Python sin dependen
 ```dockerfile
 FROM python:3.12-slim
 
-CMD ["/bin/bash"]
+#  Set working directory for better layer caching
+WORKDIR /workspace
+
+#  Copy only requirements to cache dependencies layer
+COPY requirements.txt .
+
+#  Create venv, install dependencies, register kernel, 
+# configure bashrc, and clean up in one layer
+RUN set -eux; \
+    python -m venv /opt/venv; \
+    # ensure the virtualenv is activated in interactive shells
+    echo 'source /opt/venv/bin/activate' >> /root/.bashrc; \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip; \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt; \
+    rm requirements.txt; \
+    # register this environment as a Jupyter kernel
+    /opt/venv/bin/python -m ipykernel install --sys-prefix --name venv --display-name "Python3.12 (venv)"
+
+#  Prepend venv to PATH and ensure bash sources bashrc in non-interactive mode
+ENV PATH="/opt/venv/bin:$PATH" \
+    BASH_ENV="/root/.bashrc"
+
+#  Expose Jupyter Notebook port
+EXPOSE 8888
+
+#  Launch bash (venv will be active via bashrc)
+CMD ["bash"]
+```
+
+El archivo `requirements.txt` incluye:
+
+```
+jupyter
+ipykernel
 ```
 
 #### Ejecutar y Crear el Contenedor
@@ -147,7 +240,11 @@ Estando en la carpeta padre del proyecto:
 Imagen basada en Miniconda para entornos de desarrollo científico.
 
 ```dockerfile
-FROM continuumio/miniconda3:23.10.0-1
+FROM continuumio/miniconda3:24.10.0-1
+
+LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
+      version="0.1.1" \
+      description="Python 3.11 with conda for base image analytic projects"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
@@ -160,7 +257,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-    
+
 CMD ["/bin/bash"]
 ```
 
@@ -200,8 +297,12 @@ Estando en la carpeta padre del proyecto:
 Versión extendida para desarrollo con Node.js y otras herramientas adicionales.
 
 ```dockerfile
-# Imagen base misma que en latest de PythonConda
-FROM continuumio/miniconda3:23.10.0-1
+# Imagen base misma que en latest de conda/Dockerfile
+FROM continuumio/miniconda3:24.10.0-1
+
+LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
+      version="0.1.1" \
+      description="Python 3.11 with conda for base image dev-version"
 
 # Actualizar repositorios e instalar utilidades esenciales para desarrollo
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -315,11 +416,58 @@ Estando en la carpeta padre del proyecto:
 Imagen con Python Conda y Apache Spark para procesamiento de datos distribuido.
 
 ```dockerfile
+# Use the same base image as the main Dockerfile
+# For more information:
+#   - https://hub.docker.com/r/lacamposm/docker-helpers
+#   - https://github.com/lacamposm/desarrollo-analitico-oic
 FROM lacamposm/docker-helpers:python-conda-base-0.1.1
 
 LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
       version="0.1.1" \
       description="Python 3.12.10 + Spark 3.5.5"
+
+# Install dependencies, configure system, and setup directories in a single layer
+# to reduce image size and number of layers  
+RUN mkdir -p /my-project-dir /data/_tmp && \
+    chmod -R 777 /data/_tmp && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        bash-completion \
+        locales \
+        openjdk-17-jre-headless && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget -q https://archive.apache.org/dist/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz && \
+    tar -xzf spark-3.5.5-bin-hadoop3.tgz && \
+    mv spark-3.5.5-bin-hadoop3 /opt/spark && \
+    rm spark-3.5.5-bin-hadoop3.tgz && \
+    rm -rf /tmp/* /root/.cache /root/.wget-hsts
+
+# Configure environment variables.
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Expose ports for Spark UI, FastAPI, Streamlit, Jupyter
+EXPOSE 4040 8000 8501 8888
+
+CMD ["/bin/bash"]
+```
+
+### spark/Dockerfile.dev
+
+Versión extendida para desarrollo con herramientas adicionales y base en python-conda-dev.
+
+```dockerfile
+# Use the same base image as the main Dockerfile
+# For more information:
+#   - https://hub.docker.com/r/lacamposm/docker-helpers
+#   - https://github.com/lacamposm/desarrollo-analitico-oic
+FROM lacamposm/docker-helpers:python-conda-base-0.1.1-dev
+
+LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
+      version="0.1.1" \
+      description="Python 3.12.10 + Spark 3.5.5, dev-version"
 
 # Install dependencies, configure system, and setup directories in a single layer
 # to reduce image size and number of layers  
@@ -365,6 +513,12 @@ Estando en la carpeta padre del proyecto:
      docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python-spark:latest
      ```
 
+3. Para la versión de desarrollo:
+     ```sh
+     docker build -t python-spark-dev -f ./spark/Dockerfile.dev .
+     docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python-spark-dev:latest
+     ```
+
 ##### Windows
 
 1. Construir la imagen de Docker:
@@ -378,6 +532,15 @@ Estando en la carpeta padre del proyecto:
      -v "${PWD}:/$(Split-Path -Leaf $PWD)" `
      -w "/$(Split-Path -Leaf $PWD)" `
      python-spark:latest
+     ```
+
+3. Para la versión de desarrollo:
+     ```powershell
+     docker build -t python-spark-dev -f .\spark\Dockerfile.dev .
+     docker run -it --rm `
+     -v "${PWD}:/$(Split-Path -Leaf $PWD)" `
+     -w "/$(Split-Path -Leaf $PWD)" `
+     python-spark-dev:latest
      ```
 
 ## Usos de Docker en Python
@@ -440,10 +603,6 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
      ```sh
      docker tag python-poetry tu-usuario-dockerhub/nombre-asignado:python-poetry
      ```
-     Para PoetryDev:
-     ```sh
-     docker tag python-poetry-dev tu-usuario-dockerhub/nombre-asignado:python-poetry-dev
-     ```
      Para PythonSpark:
      ```sh
      docker tag python-spark tu-usuario-dockerhub/nombre-asignado:python-spark
@@ -467,10 +626,6 @@ Para publicar las imágenes en Docker Hub, sigue estos pasos:
      Para PythonPoetry:
      ```sh
      docker push tu-usuario-dockerhub/nombre-asignado:python-poetry
-     ```
-     Para PoetryDev:
-     ```sh
-     docker push tu-usuario-dockerhub/nombre-asignado:python-poetry-dev
      ```
      Para PythonSpark:
      ```sh
