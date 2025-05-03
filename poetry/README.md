@@ -1,57 +1,51 @@
 # Docker Python Poetry Environment
 
-Imagen básica con Python 3.12 y Poetry para gestión de dependencias.
+Este directorio contiene una imagen Docker con Python 3.12 y Poetry para gestión profesional de dependencias en proyectos Python.
 
-## Dockerfile
+## Contenido
+- `Dockerfile`: Imagen base con Python 3.12 y Poetry instalado y configurado
 
-```dockerfile
-FROM python:3.12.10
+## Características principales
+- Basada en la imagen oficial `python:3.12.10`
+- Incluye Poetry para gestión determinista de dependencias
+- Configurado para usar el entorno global (sin virtualenvs)
+- Incluye herramientas de desarrollo esenciales (git, curl, build-essential)
+- Ideal para desarrollo de paquetes y aplicaciones con dependencias complejas
 
-LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
-      version="0.1.1" \
-      description="Python 3.12.10 + Poetry"
+## Ejemplo de uso
 
-ENV POETRY_HOME="/opt/poetry"
-ENV PATH="${POETRY_HOME}/bin:${PATH}"
+### Construir la imagen
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    bash build-essential ca-certificates curl git make wget \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir --upgrade pip --root-user-action=ignore \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry config virtualenvs.create false \
-    && rm -rf /root/.cache/pypoetry/*
-
-CMD ["/bin/bash"]
+```bash
+# Desde el directorio raíz del proyecto
+docker build -t python-poetry -f ./poetry/Dockerfile .
 ```
 
-## Cómo construir y ejecutar el contenedor
+### Ejecutar el contenedor
 
-### Linux/MacOS
+```bash
+# Linux/MacOS
+docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python-poetry:latest
 
-1. Construir la imagen de Docker:
-    ```sh
-    docker build -t python-poetry -f ./poetry/Dockerfile .
-    ```
-2. Ejecutar el contenedor montando la carpeta actual como volumen:
-    ```sh
-    docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python-poetry:latest
-    ```
+# Windows PowerShell
+docker run -it --rm -v "${PWD}:/$(Split-Path -Leaf $PWD)" -w "/$(Split-Path -Leaf $PWD)" python-poetry:latest
+```
 
-### Windows
+### Iniciar un nuevo proyecto con Poetry
 
-1. Construir la imagen de Docker:
-    ```powershell
-    docker build -t python-poetry -f .\poetry\Dockerfile .
-    ```
-2. Ejecutar el contenedor montando la carpeta actual como volumen:
-    ```powershell
-    docker run -it --rm `
-    -v "${PWD}:/$(Split-Path -Leaf $PWD)" `
-    -w "/$(Split-Path -Leaf $PWD)" `
-    python-poetry:latest
-    ```
+```bash
+# Dentro del contenedor
+poetry new mi-proyecto
+cd mi-proyecto
+poetry add pandas matplotlib
+poetry run python -c "import pandas; print(pandas.__version__)"
+```
+
+### Recomendaciones
+- Usa esta imagen para proyectos que necesiten gestión robusta de dependencias
+- Ideal para desarrollo de bibliotecas Python que serán publicadas
+- Aprovecha Poetry para bloquear versiones exactas y garantizar reproducibilidad
+- Utiliza `pyproject.toml` para configurar tu proyecto con estándares modernos
 
 ---
 

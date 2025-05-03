@@ -1,85 +1,52 @@
 # Python 3.12 Minimal Docker Image
 
-Imagen mínima de Python 3.12 para entornos ligeros sin paquetes adicionales. Ideal para ejecutar scripts o aplicaciones simples de manera eficiente sin sobrecargar el contenedor.
+Este directorio contiene una imagen Docker minimalista basada en Python 3.12, diseñada para entornos ligeros y eficientes.
 
-## Dockerfile
+## Contenido
+- `Dockerfile`: Imagen base con Python 3.12 y entorno virtual
+- `requirements.txt`: Dependencias mínimas (jupyter, ipykernel)
 
-```dockerfile
-FROM python:3.12-slim
+## Características principales
+- Basada en la imagen oficial `python:3.12-slim`
+- Configuración de entorno virtual para aislamiento de dependencias
+- Soporte para Jupyter Notebook con kernel personalizado
+- Mínima huella de almacenamiento para despliegues eficientes
+- Ideal para scripts, microservicios y aplicaciones web ligeras
 
-#  Set working directory for better layer caching
-WORKDIR /workspace
+## Ejemplo de uso
 
-#  Copy only requirements to cache dependencies layer
-COPY requirements.txt .
+### Construir la imagen
 
-#  Create venv, install dependencies, register kernel, 
-# configure bashrc, and clean up in one layer
-RUN set -eux; \
-    python -m venv /opt/venv; \
-    # ensure the virtualenv is activated in interactive shells
-    echo 'source /opt/venv/bin/activate' >> /root/.bashrc; \
-    /opt/venv/bin/pip install --no-cache-dir --upgrade pip; \
-    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt; \
-    rm requirements.txt; \
-    # register this environment as a Jupyter kernel
-    /opt/venv/bin/python -m ipykernel install --sys-prefix --name venv --display-name "Python3.12 (venv)"
-
-#  Prepend venv to PATH and ensure bash sources bashrc in non-interactive mode
-ENV PATH="/opt/venv/bin:$PATH" \
-    BASH_ENV="/root/.bashrc"
-
-#  Expose Jupyter Notebook port
-EXPOSE 8888
-
-#  Launch bash (venv will be active via bashrc)
-CMD ["bash"]
+```bash
+# Desde el directorio raíz del proyecto
+docker build -t python3.12-slim -f ./python-min/Dockerfile .
 ```
 
-El archivo `requirements.txt` incluye:
+### Ejecutar el contenedor
 
+```bash
+# Linux/MacOS
+docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python3.12-slim:latest
+
+# Windows PowerShell
+docker run -it --rm -v "${PWD}:/$(Split-Path -Leaf $PWD)" -w "/$(Split-Path -Leaf $PWD)" python3.12-slim:latest
 ```
-jupyter
-ipykernel
+
+### Iniciar Jupyter Notebook
+
+```bash
+# Linux/MacOS
+docker run -it --rm -p 8888:8888 -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python3.12-slim:latest jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
+
+# Windows PowerShell
+docker run -it --rm -p 8888:8888 -v "${PWD}:/$(Split-Path -Leaf $PWD)" -w "/$(Split-Path -Leaf $PWD)" python3.12-slim:latest jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
 ```
 
-## Cómo construir y ejecutar el contenedor
-
-### Linux/MacOS
-
-1. Construir la imagen de Docker:
-
-    ```bash
-    docker build -t python3.12-slim -f ./python-min/Dockerfile .
-    ```
-
-2. Ejecutar el contenedor montando la carpeta actual como volumen:
-    ```sh
-    docker run -it --rm -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python3.12-slim:latest
-    ```
-
-3. Para iniciar un servidor Jupyter Notebook y explorar el entorno:
-    ```sh
-    docker run -it --rm -p 8888:8888 -v "$(pwd)":/$(basename "$(pwd)") -w /$(basename "$(pwd)") python3.12-slim:latest jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
-    ```
-
-### Windows
-
-1. Construir la imagen de Docker:
-    ```sh
-    docker build -t python3.12-slim -f .\python-min\Dockerfile .
-    ```
-2. Ejecutar el contenedor montando la carpeta actual como volumen:
-    ```powershell
-    docker run -it --rm -v "${PWD}:/$(Split-Path -Leaf $PWD)" -w "/$(Split-Path -Leaf $PWD)" python3.12-slim:latest
-    ```
-    O en una línea más legible usando el caracter de continuación ` :
-    ```powershell
-    docker run -it --rm `
-         -v "${PWD}:/$(Split-Path -Leaf $PWD)" `
-         -w "/$(Split-Path -Leaf $PWD)" `
-         python3.12-slim:latest
-    ```
+### Recomendaciones
+- Usa esta imagen para proyectos que requieran un entorno Python limpio y ligero
+- Personaliza el archivo `requirements.txt` para incluir solo las dependencias necesarias
+- Ideal para CI/CD, microservicios y entornos donde el rendimiento y el tamaño importan
+- Extiende el Dockerfile si necesitas agregar herramientas específicas para tu proyecto
 
 ---
 
