@@ -1,4 +1,4 @@
-# Use image base for development with conda and pyspark
+# Use image base for spark/Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 #   - https://github.com/lacamposm/desarrollo-analitico-oic
@@ -31,12 +31,7 @@ RUN conda env create -f /tmp/environment.yml -n pyspark-env  \
 # Switch to the non-root user
 USER dev-user
 
-# Copy the application code and set ownership to the non-root user
-COPY --chown=dev-user:dev-user . /pyspark-project
-
-# Expose ports for:
-# - 4040: Spark UI
-# - 8501: Streamlit
+# - 4040-Spark UI and 8501-Streamlit
 EXPOSE 4040 8501
 
 CMD ["/bin/bash"]
