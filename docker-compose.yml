@@ -1,17 +1,42 @@
 services:
-  my-project-sol:
+  pyspark-project:
     build:
       context: .
       dockerfile: Dockerfile
-    image: my-project-sol
-    container_name: my-project-sol
-    working_dir: /my-project-dir
+    image: pyspark-project
+    container_name: pyspark-project
+    working_dir: /pyspark-dir
+    ports:
+      - "8502:8502" # Streamlit
+      - "5678:5678" # Debugging
+      - "8888:8888" # Jupyter-Notebook
+      - "4040:4040" # SparkUI,
+    volumes:
+      - ./:/pyspark-dir
+    environment:
+      # For debugging
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/pyspark-dir
+      - STREAMLIT_SERVER_PORT=8502
+      - STREAMLIT_SERVER_RUN_ON_SAVE=true
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_BROWSER_SERVER_ADDRESS=0.0.0.0
+      - DEBUG=true
+    
+    command: tail -f /dev/null 
+  app-project:
+    image: pyspark-project
+    container_name: app-project
+    working_dir: /pyspark-project
     ports:
       - "8501:8501" # Streamlit
-      - "4040:4040" # SparkUI
+      - "4041:4040" # SparkUI
     volumes:
-      - ./:/my-project-dir
+      - ./:/pyspark-project
     environment:
-      - PYTHONPATH=/my-project-dir      
-    
+      - PYTHONPATH=/pyspark-project
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_BROWSER_SERVER_ADDRESS=0.0.0.0
+        
     command: bash -lc "streamlit run app.py"

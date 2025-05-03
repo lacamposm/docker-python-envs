@@ -1,16 +1,16 @@
-# Use the base image in conda/Dockerfile
+# Use base image in conda/Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 #   - https://github.com/lacamposm/desarrollo-analitico-oic
-FROM lacamposm/docker-helpers:python-conda-base-0.1.1
+FROM lacamposm/docker-helpers:python-conda-base-0.1.2
 
 LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
-      version="0.1.1" \
-      description="Python 3.12.10 + Spark 3.5.5"
+      version="0.1.2" \
+      description="Python 3.12.8 + Spark 3.5.5, make, postgresql-client"
 
 # Install dependencies, configure system, and setup directories in a single layer
 # to reduce image size and number of layers  
-RUN mkdir -p /my-project-dir /data/_tmp && \
+RUN mkdir -p /data/_tmp && \
     chmod -R 777 /data/_tmp && \
     apt-get update && \
     apt-get install -y --no-install-recommends \

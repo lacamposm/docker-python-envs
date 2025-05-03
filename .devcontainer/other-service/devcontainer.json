@@ -1,11 +1,11 @@
 {
-  "name": "Pyspark-Project",
-  "dockerComposeFile": "../docker-compose.yml",
+  "name": "custom name",
+  "dockerComposeFile": "docker-compose-dev.yml",
   "service": "pyspark-project",
   "workspaceFolder": "/pyspark-project",
   "remoteUser": "dev-user",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "conda run -n pyspark-env  python -m ipykernel install --user --name pyspark-env  --display-name 'Python 3.12 (pyspark-env)'",
+  "postCreateCommand": "conda run -n pyspark-project-dev python -m ipykernel install --user --name pyspark-project-dev --display-name 'Python 3.12 (pyspark-project-dev)'",
   "customizations": {
     "vscode": {
       "settings": {

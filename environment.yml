@@ -7,3 +7,8 @@ dependencies:
   - pip
   - streamlit
   - pyspark=3.5.5   # Spark
+  - pip:
+    - debugpy       # Debugging
+    - jupyter       # Notebooks
+    - sphinx        # Documentation
+    - black         # Code formatting
