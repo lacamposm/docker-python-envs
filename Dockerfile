@@ -1,8 +1,7 @@
 # Use image base for spark/Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
-#   - https://github.com/lacamposm/desarrollo-analitico-oic
-FROM lacamposm/docker-helpers:pyspark-conda-0.1.2
+FROM lacamposm/docker-helpers:pyspark-conda-0.1.3
 
 WORKDIR /pyspark-project
 

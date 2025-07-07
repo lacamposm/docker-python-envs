@@ -6,6 +6,7 @@ Este directorio contiene una imagen Docker basada en Miniconda, optimizada para 
 - `Dockerfile`: Imagen base con Miniconda y herramientas esenciales de desarrollo
 
 ## Características principales
+
 - Basada en la imagen oficial `continuumio/miniconda3:24.11.1-0`
 - Incluye Python 3.12.8 con sistema de gestión de paquetes Conda
 - Preinstaladas herramientas de desarrollo esenciales (git, build-essential, curl)
