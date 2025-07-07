@@ -1,4 +1,4 @@
-# Use image base for spark/Dockerfile
+# Use image base for pyspark/Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 FROM lacamposm/docker-helpers:pyspark-conda-0.1.3
@@ -30,7 +30,7 @@ RUN conda env create -f /tmp/environment.yml -n pyspark-env  \
 # Switch to the non-root user
 USER dev-user
 
-# - 4040-Spark UI and 8501-Streamlit
-EXPOSE 4040 8501
+# 4040-Spark UI, 8501-Streamlit and 8888-Jupyter
+EXPOSE 4040 8501 8888
 
 CMD ["/bin/bash"]
