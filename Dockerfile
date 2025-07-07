@@ -1,4 +1,4 @@
-# Use image base for pyspark/Dockerfile
+# Use this image as the base for the pyspark Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 FROM lacamposm/docker-helpers:pyspark-conda-0.1.3
