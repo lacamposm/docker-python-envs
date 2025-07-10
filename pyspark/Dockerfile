@@ -6,6 +6,7 @@ LABEL maintainer="lacamposm <lacamposm@unal.edu.co>" \
       version="0.1.3" \
       description="Python 3.12.8 + Spark 3.5.5 with conda for analytics development"
 
+# Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     bash-completion \
@@ -27,12 +28,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Download and install Spark
 RUN mkdir -p /data/_tmp && \
     chmod -R 777 /data/_tmp && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        bash-completion \
-        locales \
-        openjdk-17-jre-headless && \
-    rm -rf /var/lib/apt/lists/* && \
     wget -q https://archive.apache.org/dist/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz && \
     tar -xzf spark-3.5.5-bin-hadoop3.tgz && \
     mv spark-3.5.5-bin-hadoop3 /opt/spark && \
@@ -45,7 +40,7 @@ ENV PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-# Expose ports for Spark UI
+# Expose port for Spark UI
 EXPOSE 4040
 
 CMD ["/bin/bash"]
