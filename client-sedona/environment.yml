@@ -1,0 +1,38 @@
+name: sedona-spark
+channels:
+  - conda-forge
+dependencies:
+  # Python version pinned to 3.10 because Sedona 1.7.2 was tested only with Python 3.7–3.10 on Spark 3.5 (see Sedona platform support table)
+  - python=3.10
+  # core runtime
+  - numpy
+  - pandas>=2.2
+  - pyarrow>=14
+  - pip
+  # Modern geospatial stack – Sedona ≥1.6 supports Shapely 2.x and GeoPandas ≥1.0
+  - shapely>=2.0
+  - geopandas>=1.0
+  - pyproj>=3.6
+  - rtree
+  - fiona>=1.9
+  - gdal>=3.8
+  - proj>=9.3
+  - geos>=3.12
+  # Utilities for Jupyter development
+  - jupyter
+  - jupyterlab
+  - ipykernel
+  # Additional libraries for geospatial analysis
+  - folium
+  - geodatasets
+  - h3-py
+  # Additional general libraries
+  - contextily
+  - py7zr
+  - streamlit
+  - ydata-profiling
+  # Install Spark and Sedona via pip to ensure compatibility with conda-forge dependencies
+  - pip:
+      - streamlit-folium
+      - pyspark==3.5.5
+      - apache-sedona==1.7.2

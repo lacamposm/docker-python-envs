@@ -1,4 +1,4 @@
-# Use this image as the base for the pyspark Dockerfile
+# Use image base for pyspark/Dockerfile
 # For more information:
 #   - https://hub.docker.com/r/lacamposm/docker-helpers
 FROM lacamposm/docker-helpers:pyspark-conda-0.1.3
@@ -13,17 +13,19 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 # Combine all RUN commands to reduce image layers
-RUN conda env create -f /tmp/environment.yml -n pyspark-env  \
+RUN ENV_NAME=$(grep '^name:' /tmp/environment.yml | cut -d ' ' -f 2) \
+    && echo "Detected Conda environment name: $ENV_NAME" \
+    && conda env create -f /tmp/environment.yml \
     && conda clean --all --yes \
     && rm /tmp/environment.yml \
-    && printf "source /opt/conda/etc/profile.d/conda.sh\nconda activate pyspark-env \n" \
+    && printf "source /opt/conda/etc/profile.d/conda.sh\nconda activate $ENV_NAME \n" \
        > /etc/profile.d/conda-env.sh \
     && groupadd --gid $USER_GID dev-user \
     && useradd --uid $USER_UID --gid $USER_GID -m dev-user \
     && chown -R dev-user:dev-user /pyspark-project \
     && { \
          echo "source /opt/conda/etc/profile.d/conda.sh"; \
-         echo "conda activate pyspark-env "; \
+         echo "conda activate $ENV_NAME "; \
        } >> /home/dev-user/.bashrc \
     && chown dev-user:dev-user /home/dev-user/.bashrc
 

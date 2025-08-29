@@ -1,0 +1,19 @@
+services:
+  apache-sedona:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: apache-sedona
+    container_name: apache-sedona
+    working_dir: /apache-sedona-project
+    ports:
+      - "5678:5678" # Debugging
+      - "8888:8888" # Jupyter-Notebook
+      - "4040:4040" # SparkUI
+    volumes:
+      - ./:/apache-sedona-project
+    environment:
+      # For debugging
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/apache-sedona-project
+    command: tail -f /dev/null
