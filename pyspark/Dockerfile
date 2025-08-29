@@ -40,7 +40,7 @@ ENV PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-# Expose port for Spark UI
+# Expose ports for Spark UI
 EXPOSE 4040
 
 CMD ["/bin/bash"]
